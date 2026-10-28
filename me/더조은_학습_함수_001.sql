@@ -220,131 +220,308 @@ select ROUND(1277.56, -2);
 	* CEIL : 올림한 결과 반환
 	* FLOOR : 내림한 결과 반환
 */
-
 select CEIL(123.234);
 select CEIL(-123.234);
 
-select floor(123.456);
-select floor(-123.456);
+select FLOOR(123.234);
+select FLOOR(-123.234);
+
+-------------------------------------------------------------------------------
+/*
+ * TRUNC : 버림
+   TRUNC(NUMBER, [위치])
+ */
+
+select TRUNC(123.789);
+select TRUNC(123.789, 1);
+
+select TRUNC(-123.789);
+
+select TRUNC(125.456, -1);
 
 
-select trunc(123.456);
-select trunc(123.456, 1);
+--=========================================================================
+--													<날짜 처리 함수>
+--=========================================================================
+/*
+	* CURRENT_DATE : 시스템 날짜 
+	* NOW() : 시스템날짜와 시간
+*/
+select CURRENT_DATE;
+select NOW();
 
-select trunc(-125.12543, -1);
+select EMP_NAME, HIRE_DATE, CURRENT_DATE - HIRE_DATE 근무일수
+from EMPLOYEE;
 
-select current_date ;
-select now();
+-------------------------------------------------------------------------------
+/*
+	* INTERVAL 'n MONTH' : 특정 날짜에 해당 숫자만큼 개월수를 더해 날짜를 리턴
+*/ 
+select CURRENT_DATE + interval '1 MONTH' as 다음달;
+select (CURRENT_DATE + interval '1 MONTH')::DATE as 다음달;
 
-select emp_name, hire_date, current_date-hire_date 근무일수
-from employee;
+-- EMPLOYEE에서 사원명, 입사일, 입사후 정직원된 날짜(6개월 후) 조회
+select EMP_NAME, HIRE_DATE, (HIRE_DATE + interval '6 MONTH')::DATE "정직원된 날짜"
+from EMPLOYEE;
 
+-------------------------------------------------------------------------------
+/*
+	* EXTRACT : 특정날짜로 부터 년|월|일 값을 추출하여 반환
+	 
+	  EXTRACT(YEAR FROM DATE) : 년도만 추출
+	  EXTRACT(MONTH FROM DATE) : 월만 추출
+	  EXTRACT(DAY FROM DATE) : 일만 추출
+*/
+-- EMPLOYEE에서 사원명, 입사년도, 입사월, 입사일 조회
+select EMP_NAME
+			,EXTRACT(year from HIRE_DATE) as 입사년도
+-- 		,EXTRACT(year from HIRE_DATE)::TEXT as 입사년도   --> 문자열로 변환
+			,EXTRACT(month from HIRE_DATE) as 입사월
+			,EXTRACT(day from HIRE_DATE) as 입사일
+from EMPLOYEE;
+	  
+--=========================================================================
+--																<형 변환 함수>
+--=========================================================================	  
+/*
+	* TO_CHAR : 숫자 또는 날짜를 문자로 변환
+	  
+	  - 특정형식에 맞게 출력 가능
+	  	TO_CAHR(숫자|날짜, [포맷])	  	  
+*/
+----------------------------- 숫자타입 => 문자타입
+/*
+		9 : 해당 자리의 숫자를 의미
+				- 값이 없을 경우 소수점은 이상은 공백, 소수점 이하는 0표시
+		0 : 해당 자리의 숫자를 의미
+				- 값이 없을 경우 0으로 표시
+		FM : 해당자리에 값이 없을 경우 자리차지하지 않음
+ */
+select TO_CHAR(1234, '99999'), TO_CHAR(1234, '00000');
+select TO_CHAR(123.45, '99999.9999'), TO_CHAR(123.45, '00000.0000');
+select TO_CHAR(0.12, '9.99'), TO_CHAR(0.12, '0.00');
 
-select current_date + interval '1 month' 다음달;
-select (current_date + interval '1 month')::date as 다음달;
+select '￦'	|| TO_CHAR(1234,'99,999'); 
 
+SELECT EMP_NAME
+			,'￦' || TO_CHAR(SALARY, '999,999,999') as 급여
+			,'￦' || TO_CHAR(SALARY*12, '999,999,999') as 연봉
+from EMPLOYEE;
+	  
+select TO_CHAR(0.1000, '999,990.999');	  
+	  
+select TO_CHAR(123.456, 'FM99990.999')
+			,TO_CHAR(1234.56, 'FM9990.99')
+			,TO_CHAR(0.1000, 'FM9990.999')
+			,TO_CHAR(0.1000, 'FM9999.999');
+	  
 
-select emp_name, hire_date, (hire_date + interval '6 month')::date  "정직원된 날짜"
-from employee;
+-- PostgreSQL에서만 사용
+-- FML : L(LOCAL의 설정에 따라 통화 기호 나타냄)
+select TO_CHAR(1234, 'FML999,999');
 
-select emp_name 
-	,text(extract(year from hire_date)) as 입사년도
-	,text(extract(month from hire_date)) as 입사월
-	,text(extract(day from hire_date)) as 입사일
-from employee;
+SELECT EMP_NAME
+			,TO_CHAR(SALARY, 'FML999,999,999') as 급여
+			,TO_CHAR(SALARY*12, 'FML999,999,999') as 연봉
+from EMPLOYEE;
 
-select emp_name 
-	,extract(year from hire_date)::text as 입사년도
-	,extract(month from hire_date)::text as 입사월
-	,extract(day from hire_date)::text as 입사일
-from employee;
-
-
-select to_char(1234,'9999999');
-select to_char(1234, '999999'), to_char(1234, '000000');
-select to_char(1234.45,'99999.999'), to_char(1234.45,'00000.000');
-
-select to_char(0.121,'9.99'), to_char(0.121,'0.00');
-
-select '₩' || to_char(1234,'99,999');
-
-select emp_name
-	,'₩' || to_char(salary,'999,999,999') as 급여
-	,'₩' || to_char(salary*12,'999,999,999') as 연봉
-from employee;
-
-select 
-	to_char(123.456, 'FM9990.999')
-	,to_char(1234.56, 'FM9990.99')
-	,to_char(0.1000, 'FM9990.999')
-	,to_char(0.1000, 'FM9999.999');
-
-select TO_CHAR(1234,'FML9999.999')
-
-
+----------------------------- 날짜타입 => 문자타입
+-- 대소문자 안가림
+-- 요일만 대소문자 가림
 select TO_CHAR(NOW(), 'YYYY') as 년도4자리
-	,TO_CHAR(NOW(), 'MM') as 월
-	,TO_CHAR(NOW(), 'DD') as 일
-	,TO_CHAR(NOW(), 'day') as 요일
-	,TO_CHAR(NOW(), 'hh') as 시간
-	,TO_CHAR(NOW(), 'mi') as 분
-	,TO_CHAR(NOW(), 'ss') as 초;
+			,TO_CHAR(NOW(), 'YY') as 년도2자리
+			,TO_CHAR(NOW(), 'MM') as 월
+			,TO_CHAR(NOW(), 'DD') as 일		
+			,TO_CHAR(NOW(), 'day') as 요일		-- day이면 소문자로 요일, DAY이면 대문자로 요일
+			,TO_CHAR(NOW(), 'HH') as 시
+			,TO_CHAR(NOW(), 'MI') as 분
+			,TO_CHAR(NOW(), 'SS') as 초;
 
-select to_char(now(), 'AM HH:MI:SS');
-select to_char(now(), 'PM HH:MI:SS');
+-- 시간
+select to_char(now(), 'AM HH:MI:SS');		-- AM or PM 어떤것들 쓰던 상관없음
+select TO_CHAR(NOW(), 'HH12:MI:SS');		-- 12시간제. AM or PM없이
+select TO_CHAR(NOW(), 'HH24:MI:SS');		-- 24시간제. AM or PM없이
 
-select TO_CHAR(NOW(), 'HH12:MI:SS');
-select TO_CHAR(NOW(), 'HH24:MI:SS');
-
-select TO_CHAR(NOW(), 'YYYY-MM-DD day');
+-- 날짜
 select TO_CHAR(NOW(), 'YYYY-MM-DD DAY');
 select TO_CHAR(NOW(), 'YYYY"년" MM"월" DD"일" DAY');
 
-select EMP_NAME, to_char(hire_date, "YYYY-MM-DD")
+-- EMPLOYEE에서 사원명, 입사일(형식 25-10-28) 조회
+select EMP_NAME, to_CHAR(HIRE_DATE, 'YY-MM-DD') 입사일
 from EMPLOYEE;
 
-SELECT EMP_NAME, TO_CHAR(HIRE_DATE, 'YY-MM-DD')
-FROM EMPLOYEE;
+-- EMPLOYEE에서 사원명, 입사년도(4자리), 입사월, 입사일 조회
+select EMP_NAME
+			, TO_CHAR(HIRE_DATE, 'YYYY') 입사년도
+			, TO_CHAR(HIRE_DATE, 'MM') 입사월
+			, TO_CHAR(HIRE_DATE, 'DD') 입사일
+from EMPLOYEE;
 
-SELECT EMP_NAME, 
-	TO_CHAR(HIRE_DATE, 'YYYY') as 입사년도,
-	TO_CHAR(HIRE_DATE, 'MM') as 입사월,
-	TO_CHAR(HIRE_DATE, 'DD') as 입사일
-FROM EMPLOYEE;
+----------------------------------------------------------------------------
+/*
+	* TO_DATE : 문자열을 날짜로 변경
+	  : 숫자를 바로 넣는것은 허용하지 않음. 반드시 문자열로 넣어야 됨
+	  
+	  TO_DATE('문자열','포맷')
+ */
+select TO_DATE('261028', 'YYMMDD');
+select TO_DATE('261028 152850', 'YYMMDD HH24MISS');
+		-- TO_DATE() 함수의 특성상 시간정보는 버려짐. 년월일만 출력
+select TO_DATE(20261028::TEXT, 'YYYYMMDD');
+
+----------------------------------------------------------------------------
+/*
+	* TO_TIMESTAMP() : 문자열로 표현된 날짜와 시간을 포맷으로 변환
+	  TO_TIMESTAMP('문자열','포맷')
+*/
+select TO_TIMESTAMP('2026-10-28 15:12:30', 'YYYY-MM-DD HH24:MI:SS');
+
+select TO_TIMESTAMP('20261028151230', 'YYYYMMDDHH24MISS');
+
+select TO_TIMESTAMP('2026-10-28 PM 03:14', 'YYYY-MM-DD AM HH:MI');
 
 
-select TO_DATE('261028','YYMMDD');
-select TO_DATE('261028 152850','YYMMDD HH24MISS');
+----------------------------- 문자타입 => 숫자타입
+/*
+	* TO_NUMBER : 문자열을 숫자로 변환
+ */
 
-select TO_DATE(261028::TEXT,'YYMMDD HH24MISS');
-
-select to_timestamp('2026-10-28 15:12:30', 'YYYY-MM-DD HH24:MI:SS');
-select to_timestamp('2026-10-28 PM 03:14', 'YYYY-MM-DD AM HH24:MI');
-
-select TO_NUMBER('012345678', '999999999999');
-select TO_NUMBER('1,000,000', '999,999,999');
-
+select TO_NUMBER('012341234','999999999999');
 select TO_NUMBER('1,000,000', '999,999,999') + TO_NUMBER('550000', '999,999,999');
+
 select '1000000'::INT + '550000'::INT;
 
+--=========================================================================
+--																<NULL 처리 함수>
+--=========================================================================
+/*
+	* COALESCE(컬럼, 해당컬럼값이 NULL일때 반환할 값)
+ */
+-- EMPLOYEE에서 사원명, 보너스(NULL이면 0으로 출력)
 select EMP_NAME, COALESCE(BONUS, 0)
 from EMPLOYEE;
 
-select EMP_NAME, TO_CHAR(salary*(1+COALESCE(BONUS,0))*12, 'FML999,999,999') as "년봉"
+-- EMPLOYEE에서 사원명, 보너스포함 연봉 조회
+select EMP_NAME, TO_CHAR((SALARY + SALARY * coalesce(BONUS, 0))*12, 'FML999,999,999') as 연봉
 from EMPLOYEE;
 
-select EMP_NAME, COALESCE(DEPT_CODE, '부서없음') as 부서, hire_date
+-- EMPLOYEE에서 사원명, 부서코드(NULL이면 '부서없음'), 입사일 조회
+select EMP_NAME, COALESCE(DEPT_CODE, '부서없음') as 부서, HIRE_DATE
 from EMPLOYEE;
 
+--=========================================================================
+--																<선택 함수>
+--=========================================================================
+/*
+	CASE WHEN THEN
+	...
+	END
+	
+	ex)
+	CASE WHEN 조건식1 THEN 결과값1
+			 WHEN 조건식2 THEN 결과값2
+			 ...
+			 ELSE 결과값N
+	END
+	
+	IF-ELSE와 같음
+ */
+
+-- EMPLOYEE에서 급여가 350만원미만이면 '초급', 
+--						350만원 이상 500만원 미만 이면 '중급', 
+--						500만원 이상이면 '고급'
+select EMP_NAME, SALARY
+			,case when SALARY >= 5000000 then '고급'
+						when SALARY >= 3500000 then '중급'
+						else '초급'
+			 end as 급수
+from EMPLOYEE;
+
+--=========================================================================
+--																<그룹 함수>
+--=========================================================================
+/*
+	* SUM(숫자타입의 컬럼) : 컬럼들의 총 합계를 반환
+*/
+
+-- EMPLOYEE에서 전사원의 총 급여의 합
+select SUM(SALARY) "급여의 합계" from EMPLOYEE;
+
+-- EMPLOYEE에서 남자 사원의 총 급여의 합
+select SUM(SALARY)
+from employee
+where SUBSTR(EMP_NO, 8, 1) IN('1', '3');
+
+-- EMPLOYEE에서 부서코드가 D5인 사원들의 총 연봉(보너스포함)의 합
+select SUM(SALARY*12)
+from employee
+where DEPT_CODE = 'D5';
+
+select TO_CHAR(SUM(SALARY * (1 + coalesce(BONUS, 0)) * 12), 'FML999,999,999') "총 연봉"
+from employee
+where DEPT_CODE = 'D5';
 
 
+/*
+	* AVG(숫자타입의 컬럼) : 평균반환
+*/
+select AVG(SALARY) from EMPLOYEE;
+select ROUND(AVG(SALARY), -1) from EMPLOYEE;
+
+/*
+	* MIN / MAX(모든타입의 컬럼) : 최소값과 최대값
+*/
+select MIN(EMP_NAME), MIN(SALARY), MIN(HIRE_DATE) from EMPLOYEE;
+
+select MAX(EMP_NAME), MAX(SALARY), MAX(HIRE_DATE) from EMPLOYEE;
 
 
+/*
+	* COUNT(* | 컬럼 | DISTINCT 컬럼) : 행 갯수 반환
+
+		COUNT(*) : 조회된 결과의 모든 행의 갯수 반환
+		COUNT(컬럼) : 컬럼의 값이 NULL인것을 제외한 행의 갯수 반환
+		COUNT(DISTINCT 컬럼) : 중복을 제거한 행의 갯수 반환
+*/
+-- EMPLOYEE의 전체 사원수
+select COUNT(*) from EMPLOYEE;
+
+-- 보너스를 받는 사원의 수
+select COUNT(BONUS) from EMPLOYEE;
+
+-- 부서 배치를 받은 사원의 수
+select COUNT(DEPT_CODE) from EMPLOYEE;
+
+-- 중복제거한 부서의 수
+select COUNT(distinct DEPT_CODE) from EMPLOYEE;
+
+-- 여성 사원의 수
+select COUNT(*)
+from employee
+where SUBSTR(EMP_NO, 8, 1) in ('2', '4');
 
 
+--=========================================================================
+--																<PostgreSQL에서 형변환>
+--=========================================================================
 
+-- 숫자 자료형
+::INT  or  ::INTEGER	=> 정수 4byte
+::NUMERIC  						=> 소수(정수)
+::REAL								=> 실수 4byte
 
+-- 문자 자료형
+::TEXT								=> 길이제한이 없는 문자열
+::VARCHAR							=> 가변길이 문자열
+::VARCHAR(n)					=> 가변길이이지만 최대 n글자까지만 넣을 수 있음
+::CHAR(n)							=> 고정길이(n길이만큼) 
 
+-- 날짜 시간
+::DATE								=> 날짜만 표시
+::TIME								=> 시간만 표시
+::TIMESTAMP						=> 날짜와 시간표시
+::INTERVAL						=> '1 MONTH'::INTERVAL
 
-
-
+-- 기타 자료형
+::BOOLEAN							=> 참, 거짓
+::JSON								=> JSON자료형  '{"AGE" : 25}'::JSON
