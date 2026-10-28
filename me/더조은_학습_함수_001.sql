@@ -73,7 +73,33 @@ from employee;
 select emp_id, emp_name, substr(emp_no, 1, 8)||'******' as "주민번호"
 from employee;
 
+select ltrim('     tjoeun')|| '컴퓨터아카데미';
+select rtrim('     tjoeun')|| '컴퓨터아카데미';
 
+select ltrim(' datadatabase      ada', 'data');
+
+select rtrim('datadatabaseada', 'data');
+
+select initcap('database dfsfsfsf');
+
+select concat('SQL', '포스트그레스');
+select concat('Postgres', '데이터베이스', '02-1234-5678');
+
+select 'Postgres'|| '데이터베이스'||'02-1234-5678';
+
+select email, replace(email,'google.com', 'naver.com')
+from employee;
+
+
+select abs(-10);
+
+select mod(10,3);
+
+select round(1234.45656);
+select round(1234.45656, 2);
+
+select ceil(123.234);
+select ceil(-123.234);
 
 
 
