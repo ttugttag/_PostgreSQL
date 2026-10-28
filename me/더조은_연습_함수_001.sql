@@ -18,7 +18,6 @@ FROM EMPLOYEE;
 --   (단, 각 별칭은 근무일수1, 근무일수2가 되도록 하고 모두 정수(내림), 양수가 되도록 처리)
 
 -- 4. EMPLOYEE테이블에서 사번이 홀수인 직원들의 정보 모두 조회
-
 SELECT *
 FROM EMPLOYEE
 WHERE (EMP_ID::INT % 2) = 0;
@@ -30,7 +29,6 @@ from EMPLOYEE;
 -- 6. EMPLOYEE 테이블에서 사원명, 급여 조회 (단, 급여는 '\9,000,000' 형식으로 표시)
 select EMP_NAME, TO_CHAR(SALARY, 'FML999,999,999')
 from EMPLOYEE;
-
 
 -- 7. EMPLOYEE테이블에서 직원 명, 부서코드, 생년월일, 나이 조회
 --   (단, 생년월일은 주민번호에서 추출해서 00년 00월 00일로 출력되게 하며 
