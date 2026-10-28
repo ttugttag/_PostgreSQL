@@ -220,8 +220,124 @@ select ROUND(1277.56, -2);
 	* CEIL : 올림한 결과 반환
 	* FLOOR : 내림한 결과 반환
 */
+
 select CEIL(123.234);
 select CEIL(-123.234);
+
+select floor(123.456);
+select floor(-123.456);
+
+
+select trunc(123.456);
+select trunc(123.456, 1);
+
+select trunc(-125.12543, -1);
+
+select current_date ;
+select now();
+
+select emp_name, hire_date, current_date-hire_date 근무일수
+from employee;
+
+
+select current_date + interval '1 month' 다음달;
+select (current_date + interval '1 month')::date as 다음달;
+
+
+select emp_name, hire_date, (hire_date + interval '6 month')::date  "정직원된 날짜"
+from employee;
+
+select emp_name 
+	,text(extract(year from hire_date)) as 입사년도
+	,text(extract(month from hire_date)) as 입사월
+	,text(extract(day from hire_date)) as 입사일
+from employee;
+
+select emp_name 
+	,extract(year from hire_date)::text as 입사년도
+	,extract(month from hire_date)::text as 입사월
+	,extract(day from hire_date)::text as 입사일
+from employee;
+
+
+select to_char(1234,'9999999');
+select to_char(1234, '999999'), to_char(1234, '000000');
+select to_char(1234.45,'99999.999'), to_char(1234.45,'00000.000');
+
+select to_char(0.121,'9.99'), to_char(0.121,'0.00');
+
+select '₩' || to_char(1234,'99,999');
+
+select emp_name
+	,'₩' || to_char(salary,'999,999,999') as 급여
+	,'₩' || to_char(salary*12,'999,999,999') as 연봉
+from employee;
+
+select 
+	to_char(123.456, 'FM9990.999')
+	,to_char(1234.56, 'FM9990.99')
+	,to_char(0.1000, 'FM9990.999')
+	,to_char(0.1000, 'FM9999.999');
+
+select TO_CHAR(1234,'FML9999.999')
+
+
+select TO_CHAR(NOW(), 'YYYY') as 년도4자리
+	,TO_CHAR(NOW(), 'MM') as 월
+	,TO_CHAR(NOW(), 'DD') as 일
+	,TO_CHAR(NOW(), 'day') as 요일
+	,TO_CHAR(NOW(), 'hh') as 시간
+	,TO_CHAR(NOW(), 'mi') as 분
+	,TO_CHAR(NOW(), 'ss') as 초;
+
+select to_char(now(), 'AM HH:MI:SS');
+select to_char(now(), 'PM HH:MI:SS');
+
+select TO_CHAR(NOW(), 'HH12:MI:SS');
+select TO_CHAR(NOW(), 'HH24:MI:SS');
+
+select TO_CHAR(NOW(), 'YYYY-MM-DD day');
+select TO_CHAR(NOW(), 'YYYY-MM-DD DAY');
+select TO_CHAR(NOW(), 'YYYY"년" MM"월" DD"일" DAY');
+
+select EMP_NAME, to_char(hire_date, "YYYY-MM-DD")
+from EMPLOYEE;
+
+SELECT EMP_NAME, TO_CHAR(HIRE_DATE, 'YY-MM-DD')
+FROM EMPLOYEE;
+
+SELECT EMP_NAME, 
+	TO_CHAR(HIRE_DATE, 'YYYY') as 입사년도,
+	TO_CHAR(HIRE_DATE, 'MM') as 입사월,
+	TO_CHAR(HIRE_DATE, 'DD') as 입사일
+FROM EMPLOYEE;
+
+
+select TO_DATE('261028','YYMMDD');
+select TO_DATE('261028 152850','YYMMDD HH24MISS');
+
+select TO_DATE(261028::TEXT,'YYMMDD HH24MISS');
+
+select to_timestamp('2026-10-28 15:12:30', 'YYYY-MM-DD HH24:MI:SS');
+select to_timestamp('2026-10-28 PM 03:14', 'YYYY-MM-DD AM HH24:MI');
+
+select TO_NUMBER('012345678', '999999999999');
+select TO_NUMBER('1,000,000', '999,999,999');
+
+select TO_NUMBER('1,000,000', '999,999,999') + TO_NUMBER('550000', '999,999,999');
+select '1000000'::INT + '550000'::INT;
+
+select EMP_NAME, COALESCE(BONUS, 0)
+from EMPLOYEE;
+
+select EMP_NAME, TO_CHAR(salary*(1+COALESCE(BONUS,0))*12, 'FML999,999,999') as "년봉"
+from EMPLOYEE;
+
+select EMP_NAME, COALESCE(DEPT_CODE, '부서없음') as 부서, hire_date
+from EMPLOYEE;
+
+
+
 
 
 
