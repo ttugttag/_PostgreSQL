@@ -51,6 +51,29 @@ where substr(emp_no, 8,1) IN ('2','4');
 select EMP_NAME, EMAIL, EMP_ID, LEFT(EMAIL, POSITION('@' IN EMAIL)-1)
 FROM EMPLOYEE;
 
+select EMP_NAME, EMAIL, EMP_ID, substr(EMAIL, 1, POSITION('@' IN EMAIL)-1) as "아이디"
+FROM EMPLOYEE;
+
+select EMP_NAME, EMAIL, EMP_ID, substring(EMAIL from 1 for POSITION('@' IN EMAIL)-1) as "아이디"
+FROM EMPLOYEE;
+
+select emp_name, lpad(email, 25)
+from employee;
+
+select emp_name, lpad(email, 25, '#')
+from employee;
+
+select emp_name, rpad(email, 25, '#')
+from employee;
+
+
+select emp_id, emp_name, rpad(substr(emp_no, 1, 8), 14, '*')
+from employee;
+
+select emp_id, emp_name, substr(emp_no, 1, 8)||'******' as "주민번호"
+from employee;
+
+
 
 
 
