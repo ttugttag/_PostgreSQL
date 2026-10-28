@@ -1,3 +1,17 @@
+--문1
+select td.department_name as "학과명", tc.class_name as "계열"
+from tb_class tc 
+join tb_department td on tc.department_no = td.department_no 
+
+--문2
+select td.department_name ||'의 정원은 '|| td.capacity ||'입니다' as "합치기"
+from tb_department td 
+
+--문3
+select student_name, student_no 
+from tb_student 
+where student_no in ('A513079','A513090','A513691','A513091','A513119');
+
 --문4
 select td.department_name , td.category, td.capacity 
 from tb_department td  
