@@ -65,7 +65,7 @@ ORDER BY
     JOB_CODE NULLS LAST;
 
 
--- 6. EMPLOYEE 테이블에서 부서코드가 'D5'인 사원 또는 직급코드가 'J7'인 사원들의 이름, 부서코드, 급여를 중복 없이 조회하시오.
+-- 6. EMPLOY 테이블에서 부서코드가 'D5'인 사원 또는 직급코드가 'J7'인 사원들의 이름, 부서코드, 급여를 중복 없이 조회하시오.
 
 SELECT 
     DISTINCT DEPT_CODE,
