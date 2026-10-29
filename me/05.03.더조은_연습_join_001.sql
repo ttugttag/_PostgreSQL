@@ -20,6 +20,21 @@ JOIN job using (job_code)
 where salary >= 3000000
 order by 3;
 
+SELECT e.emp_name, d.dept_title, e.salary, j.job_name
+FROM employee e
+JOIN department d ON (e.dept_code = d.dept_id)
+JOIN job j using (job_code)
+where e.salary >= 1000000 and j.job_name = '사원'
+order by 3;
+
+SELECT emp_name, dept_title, salary, job_name
+FROM employee 
+JOIN department ON (dept_code = dept_id)
+JOIN job using (job_code)
+where salary >= 2000000 and job_name = '사원'
+order by 3;
+
+
 -- 4. 모든 부서의 부서명과 소속 사원 수를 조회하시오.
 --    사원이 한 명도 없는 부서도 0명으로 출력하고, 부서코드 오름차순으로 정렬하시오.
 
@@ -51,20 +66,67 @@ order by 1;
 
 -- 7. 관리자 사번이 등록된 사원의 사원명과 관리자명을 조회하시오.
 --    해당 관리자 사번을 가진 사원이 EMPLOYEE 테이블에 실제로 존재하는 경우만 출력하시오.
-select E.EMP_ID, M.EMP_NAME 
+select E.EMP_NAME, M.EMP_NAME 
 from employee e 
 left join EMPLOYEE M on (E.MANAGER_ID = M.EMP_ID)
-where emp_name is not null;
+where M.emp_name is not null;
 
 
 -- 8. 모든 사원의 사원명, 급여, 급여등급을 조회하시오.
 --    급여등급은 급여가 최소급여와 최대급여 사이에 있는 경우 매칭하고, 사번 오름차순으로 정렬하시오.
-
+select EMP_NAME, SALARY, SAL_LEVEL
+from EMPLOYEE
+join SAL_GRADE on (SALARY BETWEEN MIN_SAL and  MAX_SAL);
 
 -- 9. 부서별 부서명, 평균급여를 조회하시오.
 --    소속 사원이 2명 이상인 부서만 조회하고 평균급여 내림차순으로 정렬하시오.
+select dept_title, round(avg(salary)), count(*)
+from employee 
+join department on (dept_code = dept_id)
+group by dept_title
+having count(*) >= 2
+ORDER BY 
+    round(avg(salary)) DESC;           
+
+
+
+select dept_title,             
+       round(AVG(salary)) AS 평균급여,  COUNT(emp_id)
+from employee
+join department on (dept_code = dept_id)
+join location on (location_id = local_code)
+join national using (national_code)
+GROUP BY 
+    dept_title
+HAVING 
+    COUNT(emp_id) >= 2    
+ORDER BY 
+    평균급여 DESC;           
 
 
 -- 10. 모든 국가의 국가명과 해당 국가에 위치한 부서의 소속 사원 수를 조회하시오.
 --     소속 사원이 없는 국가도 0명으로 출력하고, 사원 수 내림차순, 국가명 오름차순으로 정렬하시오.
+select national_name, COUNT(emp_id)
+from employee
+join department on (dept_code = dept_id)
+join location on (location_id = local_code)
+right join national using (national_code)
+GROUP BY 
+    national_name  
+ORDER BY 
+    COUNT(emp_id) DESC, 
+    national_name ASC;
+
+SELECT 
+    national_name, 
+    COUNT(emp_id) AS "사원 수"
+FROM national
+LEFT JOIN location USING (national_code)
+LEFT JOIN department ON (local_code = location_id)
+LEFT JOIN employee ON (dept_id = dept_code)
+GROUP BY 
+    national_name  
+ORDER BY 
+    COUNT(emp_id) DESC, 
+    national_name ASC;
 
