@@ -11,10 +11,14 @@ join job using (job_code);
 
 
 -- 3. EMPLOYEE테이블에서 DEPARTMENT 테이블의 모든 정보 조회
-select employee.*, DEPARTMENT.*
+--select employee.*, DEPARTMENT.*
+select DEPARTMENT.*
 from employee
-left join DEPARTMENT on (dept_id=dept_code);
+right join DEPARTMENT on (dept_id=dept_code);
+--left join DEPARTMENT on (dept_id=dept_code);
 
+select *
+from DEPARTMENT;
 
 -- 4. EMPLOYEE테이블의 직원명, 이메일, 전화번호, 고용일 조회
 select emp_name, email, phone, hire_date 
@@ -52,8 +56,10 @@ where DEPT_CODE in ('D9', 'D5');
 -- 11. EMPLOYEE테이블에 고용일이 90/01/01 ~ 01/01/01인 사원의 전체 내용을 조회
 SELECT *
 FROM employee 
-WHERE hire_date BETWEEN TO_DATE('1990/01/01', 'YYYY/MM/DD') 
-                    AND TO_DATE('2001/01/01', 'YYYY/MM/DD');
+WHERE hire_date BETWEEN '1990/01/01' 
+                    AND '2001/01/01';
+--WHERE hire_date BETWEEN TO_DATE('1990/01/01', 'YYYY/MM/DD') 
+--                    AND TO_DATE('2001/01/01', 'YYYY/MM/DD');
 
 -- 12. EMPLOYEE테이블에서 이름 끝이 '연'으로 끝나는 사원의 이름 조회
 SELECT *
@@ -73,7 +79,15 @@ where  email LIKE '____&_%' ESCAPE '&'
        and
        DEPT_CODE in ('D9', 'D6')
        and 
-       hire_date BETWEEN TO_DATE('1990/01/01', 'YYYY/MM/DD') 
-                 	 AND TO_DATE('2001/01/01', 'YYYY/MM/DD') 
+--       hire_date BETWEEN to_date('1990/01/01', 'yy/mm/dd') 
+--                 	 AND to_date('2001/01/01', 'yy/mm/dd')
+       hire_date BETWEEN '1990/01/01'
+                 	 AND '2001/01/01'
        and 
        salary >= 2700000;
+
+
+select to_date('1990-01-01', 'yyyy-mm-dd');
+
+select *
+from employee;
