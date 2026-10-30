@@ -132,7 +132,7 @@ having SUM(SALARY) = (select SUM(SALARY)
 --		from EMPLOYEE
 --		group by DEPT_CODE);
 
-
+--------------------------------------------------------------------------------
 select job_code 
 from employee
 where emp_name in ('조정연', '전지연');
@@ -147,7 +147,7 @@ from employee
 where job_code in (select job_code 
 					from employee
 					where emp_name in ('조정연', '전지연'));
-
+--------------------------------------------------------------------------------
 select salary
 from employee 
 join job using (job_code)
@@ -158,7 +158,8 @@ from employee
 join job using (job_code)
 where job_name ='대리'
 	and salary > any(array[2200000,2500000,3760000])
-	
+
+--------------------------------------------------------------------------------
 select emp_id, emp_name, job_name, salary
 from employee
 join job using (job_code)
@@ -167,7 +168,73 @@ where job_name ='대리'
 					from employee 
 					join job using (job_code)
 					where job_name = '과장')
+					
+select emp_id, emp_name, job_name, salary
+from employee
+join job using (job_code)
+where job_name ='대리'
+	and salary > (select min(salary)
+				from employee 
+				join job using (job_code)
+				where job_name = '과장')
+---------------------------------------------------------------------------------		
+select emp_id, emp_name, job_name, salary
+from employee
+join job using (job_code)
+where job_name ='차장'
+	and salary < any(select salary
+					from employee 
+					join job using (job_code)
+					where job_name = '과장')
+				
+select emp_id, emp_name, job_name, salary
+from employee
+join job using (job_code)
+where job_name ='차장'
+	and salary < (select max(salary)
+				from employee 
+				join job using (job_code)
+				where job_name = '과장')				
 
+------------------------------------------------------------------------				
+select emp_id, emp_name, job_name, salary
+from employee
+join job using (job_code)
+where job_name ='과장'
+	and salary > any(select salary
+					from employee 
+					join job using (job_code)
+					where job_name = '차장')
+					
+select emp_id, emp_name, job_name, salary
+from employee
+join job using (job_code)
+where job_name ='과장'
+	and salary > (select min(salary)
+				from employee 
+				join job using (job_code)
+				where job_name = '차장')	
+				
+				
+------------------------------------------------------------------------				
+select emp_id, emp_name, job_name, salary
+from employee
+join job using (job_code)
+where job_name ='과장'
+	and salary > all(select salary
+					from employee 
+					join job using (job_code)
+					where job_name = '차장')
+					
+select emp_id, emp_name, job_name, salary
+from employee
+join job using (job_code)
+where job_name ='과장'
+	and salary > (select max(salary)
+				from employee 
+				join job using (job_code)
+				where job_name = '차장')	
+				
 
 
 
