@@ -243,4 +243,13 @@ select *
 from 술땡겨
 
 
+--14 추가
+SELECT emp_name, dept_code, salary,
+	RANK() OVER (ORDER BY salary ASC) AS "기본_순위",
+	RANK() OVER (PARTITION BY dept_code ORDER BY salary ASC) AS "부서별_순위",
+	RANK() OVER (ORDER BY salary ASC NULLS LAST) AS "NULL_꼴찌_순위",
+	RANK() OVER (ORDER BY salary ASC) AS "낮은급여_순위"
+FROM employee;
+
+
 
