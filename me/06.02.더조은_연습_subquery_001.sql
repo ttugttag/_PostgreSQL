@@ -13,23 +13,46 @@ FROM (
 WHERE 남녀 = '여' and SUBSTR(emp_no, 1, 2)::text between '70' and '79';
 
 -- 2. 나이가 가장 막내의 사번, 사원명, 나이, 부서명, 직급명 조회
-SELECT emp_name, emp_no, dept_title, job_name, 년도
+SELECT emp_name, emp_no, dept_title, job_name, 출생년월일, 
+(EXTRACT(YEAR FROM CURRENT_DATE) - EXTRACT(YEAR FROM TO_DATE(출생년월일, 'YYYYMMDD'))) AS 나이
 FROM (
     SELECT emp_name, emp_no, dept_title, job_name,
            CASE WHEN SUBSTR(emp_no, 8, 1) IN ('1', '2') THEN '19' || SUBSTR(emp_no, 1, 6)
                 WHEN SUBSTR(emp_no, 8, 1) IN ('3', '4') THEN '20' || SUBSTR(emp_no, 1, 6)
-           END AS 년도
+           END AS 출생년월일
     FROM employee
     JOIN department ON (dept_id = dept_code)
     JOIN job USING (job_code)
-) sub
-WHERE 년도 = (
+) 
+WHERE 출생년월일 = (
     SELECT MAX(
         CASE WHEN SUBSTR(emp_no, 8, 1) IN ('1', '2') THEN '19' || SUBSTR(emp_no, 1, 6)
              WHEN SUBSTR(emp_no, 8, 1) IN ('3', '4') THEN '20' || SUBSTR(emp_no, 1, 6)
-        END
-    ) FROM employee
+        END) 
+    FROM employee
 );
+
+--------------------쉽게가 더 어렵네-----------------------------------------------------------------------
+SELECT emp_name, emp_no, dept_title, job_name, 
+       TO_CHAR(TO_DATE(LEFT(emp_no, 6), 
+       				   CASE WHEN SUBSTR(emp_no, 8, 1) IN ('1', '2') THEN '19YYMMDD' 
+       				   		ELSE '20YYMMDD' 
+       				   END), 'YYYYMMDD') AS 출생년월일,
+       (EXTRACT(YEAR FROM CURRENT_DATE) - EXTRACT(YEAR FROM TO_DATE(LEFT(emp_no, 6), 
+       				   CASE WHEN SUBSTR(emp_no, 8, 1) IN ('1', '2') THEN '19YYMMDD' 
+       				   		ELSE '20YYMMDD' 
+       				   END))) AS 나이
+FROM employee
+JOIN department ON (dept_id = dept_code)
+JOIN job USING (job_code)
+WHERE (CASE WHEN SUBSTR(emp_no, 8, 1) IN ('1','2') THEN '19' 
+            ELSE '20' 
+       END || LEFT(emp_no, 6)) = (SELECT MAX(CASE WHEN SUBSTR(emp_no, 8, 1) IN ('1','2') THEN '19' 
+                                                  ELSE '20' 
+                                             END || LEFT(emp_no, 6)) 
+                                  FROM employee);
+
+
 
 -- 3. 이름에 ‘하’가 들어가는 사원의 사번, 사원명, 직급명 조회
 SELECT emp_name, emp_no, dept_title, job_name
@@ -88,10 +111,6 @@ where BONUS is null
 	  job_code in ('J4', 'J7')
 				
 -- 10. 퇴사 하지 않은 사람과 퇴사한 사람의 수 조회
-SELECT COUNT(ent_yn)
-from employee
-group by ent_yn
-
 SELECT 
     CASE WHEN ent_yn = 'N' THEN '재직자'
          WHEN ent_yn = 'Y' THEN '퇴사자'
@@ -102,6 +121,25 @@ GROUP BY
     CASE WHEN ent_yn = 'N' THEN '재직자'
          WHEN ent_yn = 'Y' THEN '퇴사자'
     END;
+
+-------------------------------------------------------------
+SELECT 
+    CASE WHEN ent_yn = 'N' THEN '재직자'
+         WHEN ent_yn = 'Y' THEN '퇴사자'
+    END AS "퇴사자구분",
+    COUNT(*) AS 사원수
+FROM employee
+GROUP by 퇴사자구분;
+
+------------------------------------------------------------------
+SELECT 
+    CASE WHEN ent_yn='N' THEN '재직자' 
+         ELSE '퇴사자' 
+    END AS "퇴사자구분",
+    COUNT(*) 사원수
+FROM employee
+GROUP BY 1;
+
 
 -- 11. 보너스 포함한 연봉이 높은 5명의 사번, 사원명, 부서명, 직급명, 입사일, 순위 조회
 SELECT salary * (1 + COALESCE(bonus, 0)) * 12
@@ -117,10 +155,34 @@ FROM (SELECT emp_id, emp_name, dept_title, job_name, hire_date, salary * (1 + CO
 order by 순위 desc
 limit 5;
 
+--------------------------------------------------------------------------------------
+SELECT emp_id, emp_name, dept_title, job_name, hire_date,
+       (salary * (1 + COALESCE(bonus, 0)) * 12) AS 연봉,
+       RANK() OVER (ORDER BY salary * (1 + COALESCE(bonus, 0)) * 12 DESC) AS 순위
+FROM employee
+JOIN department ON (dept_code = dept_id)
+JOIN job USING (job_code)
+ORDER BY 순위 ASC
+LIMIT 5;
+
+--------WITH 사용------------------------------------------------------------------------------
+with 좀더잘하자 as 
+(SELECT emp_id, emp_name, dept_title, job_name, hire_date,
+       (salary * (1 + COALESCE(bonus, 0)) * 12) AS 연봉
+FROM employee
+JOIN department ON (dept_code = dept_id)
+JOIN job USING (job_code)
+)
+select emp_id, emp_name, dept_title, job_name, hire_date, 연봉,
+       RANK() OVER (ORDER by 연봉 DESC) AS 순위
+from 좀더잘하자
+ORDER BY 순위 ASC
+LIMIT 5;
+
 
 -- 12. 부서 별 급여 합계가 전체 급여 총 합의 20%보다 많은 부서의 부서명, 부서별 급여 합계 조회
 --	12-1. JOIN과 HAVING 사용  
-select dept_title, sum(SALARY)
+select dept_title, sum(SALARY) AS 부서급여합계
 from EMPLOYEE
 join department on (dept_code = dept_id)
 join location on (location_id = local_code)
@@ -149,7 +211,7 @@ ORDER BY 부서급여합계;
 
 
 --	12-3. WITH 사용
-with kkk as (
+with 뭐냐고 as (
 	select dept_title, sum(salary) as 부서별합계
 	from EMPLOYEE
 	join department on (dept_code = dept_id)
@@ -159,7 +221,7 @@ with kkk as (
 	group by dept_title
 ) 
 select dept_title, sum(부서별합계)
-from kkk
+from 뭐냐고
 GROUP BY dept_title
 having sum(부서별합계) > (select sum(SALARY)*0.2 from EMPLOYEE)
 
@@ -173,9 +235,10 @@ left JOIN job USING (job_code)
 group by dept_title 
 order by 2;
 
-
 -- 14. WITH를 이용하여 급여합과 급여평균 조회
-with 술땡겨 as (select sum(salary) as "sum", round(avg(salary)) as "avg" from employee)
+with 술땡겨 as 
+	(select sum(salary) as "급여합", round(avg(salary)) as "급여평균" 
+	from employee)
 select *
 from 술땡겨
 

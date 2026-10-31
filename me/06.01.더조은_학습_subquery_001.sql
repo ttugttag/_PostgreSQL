@@ -127,6 +127,12 @@ having SUM(SALARY) = (select SUM(SALARY)
 						order by 1 desc
 						limit 1);
 
+select dept_code, SUM(SALARY)
+from EMPLOYEE
+group by dept_code
+order by 2 desc
+limit 1;
+
 --select MAX(총급여)
 --from (select SUM(SALARY) as 총급여
 --		from EMPLOYEE
@@ -176,7 +182,8 @@ select EMP_ID, EMP_NAME, JOB_NAME, SALARY
 from EMPLOYEE
 join JOB USING(JOB_CODE)
 where JOB_NAME ='대리' 
-		and SALARY > ANY(array[2200000, 2500000, 3760000]); 
+	  and 
+	  SALARY > ANY(array[2200000, 2500000, 3760000]); 
 
 
 select EMP_ID, EMP_NAME, JOB_NAME, SALARY
@@ -188,6 +195,21 @@ where JOB_NAME ='대리'
 							join JOB USING(JOB_CODE)
 							where JOB_NAME ='과장'); 
 
+select EMP_ID, EMP_NAME, JOB_NAME, SALARY
+from EMPLOYEE
+join JOB USING(JOB_CODE)
+where JOB_NAME ='대리' 
+		and SALARY > (select min(SALARY)
+						from EMPLOYEE
+						join JOB USING(JOB_CODE)
+						where JOB_NAME ='과장'); 
+order by 4 desc;
+
+select min(SALARY)
+from EMPLOYEE
+join JOB USING(JOB_CODE)
+where JOB_NAME ='과장'
+
 -- 3) 차장 직급임에도 과장직급의 급여보다 적게 받는 사원의 사번, 사원명, 직급명, 급여 조회
 select EMP_ID, EMP_NAME, JOB_NAME, SALARY
 from EMPLOYEE
@@ -198,6 +220,11 @@ where JOB_NAME ='차장'
 							join JOB USING(JOB_CODE)
 							where JOB_NAME ='과장');
 
+select SALARY
+from EMPLOYEE
+join JOB USING(JOB_CODE)
+where JOB_NAME ='과장'
+order by 1;
 
 -- 4) 과장 직급임에도 차장 직급인 사원들의 모든 급여보다 더 많이 받는 사원의 사번, 사원명, 직급명, 급여 조회
 select EMP_ID, EMP_NAME, JOB_NAME, SALARY
@@ -254,11 +281,11 @@ where (DEPT_CODE, JOB_CODE) = (select DEPT_CODE, JOB_code
 select EMP_ID, EMP_NAME, JOB_CODE, MANAGER_ID
 from EMPLOYEE
 where JOB_CODE = (select JOB_CODE
-					from EMPLOYEE
-					where EMP_NAME ='지민재')
+				  from EMPLOYEE
+				  where EMP_NAME ='지민재')
 	and MANAGER_ID=(select manager_id 
-						from EMPLOYEE
-						where EMP_NAME='지민재');
+					from EMPLOYEE
+					where EMP_NAME='지민재');
 				
 -- >> 다중열 서브쿼리로
 select EMP_ID, EMP_NAME, JOB_CODE, MANAGER_ID
@@ -313,6 +340,13 @@ from EMPLOYEE
 where (DEPT_CODE, SALARY) in (select DEPT_CODE, MAX(SALARY)
 								from EMPLOYEE
 								group by DEPT_CODE)
+order by 3;
+
+select EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+from EMPLOYEE
+where (SALARY) in (select MAX(SALARY)
+				from EMPLOYEE
+				group by DEPT_CODE)
 order by 3;
 
 -----------------------------------------------------------
