@@ -178,3 +178,6 @@ order by 2;
 with 술땡겨 as (select sum(salary) as "sum", round(avg(salary)) as "avg" from employee)
 select *
 from 술땡겨
+
+
+
