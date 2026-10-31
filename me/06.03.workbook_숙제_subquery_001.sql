@@ -83,6 +83,7 @@ JOIN tb_class USING (class_no)
 JOIN tb_grade USING (class_no)          
 JOIN tb_student USING (student_no);
 
+-------------------------------------------------------------------------------
 SELECT 
     class_name,
     professor_name
@@ -107,6 +108,7 @@ select department_name, department_no
 from tb_department
 where category = '인문사회';
 
+-------------------------------------------------------------------------------
 select professor_name, department_name, class_name
 from tb_professor
 JOIN tb_department USING (department_no)
@@ -134,7 +136,9 @@ where department_no = (select department_no
 						from tb_department
 						where department_name = '음악학과');
 
-select student_name, student_no, ROUND(AVG(POINT), 1)
+-------------------------------------------------------------------------------
+--"학번", "학생 이름", "전체 평점"
+select student_name "학생 이름", student_no "학번", ROUND(AVG(POINT), 1) "전체 평점"
 from tb_grade
 join tb_student USING(student_no)
 where student_no IN (select student_no
@@ -147,7 +151,7 @@ group by student_name, student_no;
 --11. 학번이 A313047 인 학생이 학교에 나오고 있지 않다. 
 --지도 교수에게 내용을 전달하기 위한 학과 이름, 학생 이름과 지도 교수 이름이 필요하다. 
 --이때 사용할 SQL 문을 작성하시오. 단, 출력헤더는 "학과이름", "학생이름", "지도교수이름" 으로 출력되도록 한다.
-select department_name, student_name, professor_name
+select department_name 학과이름, student_name 학생이름, professor_name 지도교수이름
 FROM tb_student
 join tb_department using (department_no)
 join tb_professor ON (coach_professor_no=professor_no)
@@ -164,6 +168,7 @@ where class_no = ('C2604100')
 	  and
 	  SUBSTR(term_no, 1, 4)  = '2007';
 
+-------------------------------------------------------------------------------
 select student_no, student_name, term_no
 from tb_grade
 join tb_student using (student_no)
