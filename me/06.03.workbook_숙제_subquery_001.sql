@@ -8,6 +8,7 @@ from tb_student ts
 select student_name "학생 이름", student_ssn "주민번호"
 from tb_student ts 
 where absence_yn = 'Y'
+order by 2;
 
 --3. 주소지가 강원도나 경기도인 학생들 중 1900년대 학번을 가진 학생들의 이름과 학번, 
 --주소를 이름의 오름차순으로 화면에 출력하시오. 
