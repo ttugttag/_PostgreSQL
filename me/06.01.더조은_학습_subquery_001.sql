@@ -500,18 +500,18 @@ where 순위 <= 4;
 -- 부서별 평균급여를 구한 뒤에 부서 정보와 조인
 select *
 from (select DEPT_CODE, ROUND(AVG(SALARY)) as 평균급여
-		from EMPLOYEE
-		group by DEPT_CODE)
+	  from EMPLOYEE
+	  group by DEPT_CODE)
 join DEPARTMENT on (DEPT_CODE=DEPT_ID);
 
 -- 3) 급여구간별 인원수 
 select 급여구간,COUNT(*) as 인원수
 from (select EMP_NAME,
-		case when SALARY >= 5000000 then '고급급여'
-			when SALARY >= 3000000 then '중급급여'
-			else '초급급여'
-		end 급여구간
-		from EMPLOYEE)	
+	  case when SALARY >= 5000000 then '고급급여'
+		   when SALARY >= 3000000 then '중급급여'
+		   else '초급급여'
+	  end 급여구간
+	  from EMPLOYEE)	
 group by 급여구간;
 
 -- 4) 사원명, 급여, 부서평균

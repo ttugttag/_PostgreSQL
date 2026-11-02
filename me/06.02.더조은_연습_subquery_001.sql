@@ -10,7 +10,19 @@ FROM (
     JOIN department ON (dept_id = dept_code)
     JOIN job using (job_code)
 )
-WHERE 남녀 = '여' and SUBSTR(emp_no, 1, 2)::text between '70' and '79';
+WHERE 남녀 = '여' 
+and SUBSTR(emp_no, 1, 2)::text between '70' and '79'
+and emp_name like '이%';
+
+-------------------------------------------------------------------------------------------
+SELECT emp_name, emp_no, dept_title, job_name
+FROM employee
+JOIN department ON (dept_id = dept_code)
+JOIN job USING (job_code)
+where extract(year from to_date(substr(emp_no,1,2), 'YY'))
+	  between 1970 and 1979
+	  and emp_name like '이%'
+
 
 -- 2. 나이가 가장 막내의 사번, 사원명, 나이, 부서명, 직급명 조회
 SELECT emp_name, emp_no, dept_title, job_name, 출생년월일, 
@@ -35,13 +47,13 @@ WHERE 출생년월일 = (
 --------------------쉽게가 더 어렵네-----------------------------------------------------------------------
 SELECT emp_name, emp_no, dept_title, job_name, 
        TO_CHAR(TO_DATE(LEFT(emp_no, 6), 
-       				   CASE WHEN SUBSTR(emp_no, 8, 1) IN ('1', '2') THEN '19YYMMDD' 
-       				   		ELSE '20YYMMDD' 
-       				   END), 'YYYYMMDD') AS 출생년월일,
+	   CASE WHEN SUBSTR(emp_no, 8, 1) IN ('1', '2') THEN '19YYMMDD' 
+	   		ELSE '20YYMMDD' 
+	   END), 'YYYYMMDD') AS 출생년월일,
        (EXTRACT(YEAR FROM CURRENT_DATE) - EXTRACT(YEAR FROM TO_DATE(LEFT(emp_no, 6), 
-       				   CASE WHEN SUBSTR(emp_no, 8, 1) IN ('1', '2') THEN '19YYMMDD' 
-       				   		ELSE '20YYMMDD' 
-       				   END))) AS 나이
+	   CASE WHEN SUBSTR(emp_no, 8, 1) IN ('1', '2') THEN '19YYMMDD' 
+	   		ELSE '20YYMMDD' 
+	   END))) AS 나이
 FROM employee
 JOIN department ON (dept_id = dept_code)
 JOIN job USING (job_code)
@@ -52,7 +64,9 @@ WHERE (CASE WHEN SUBSTR(emp_no, 8, 1) IN ('1','2') THEN '19'
                                              END || LEFT(emp_no, 6)) 
                                   FROM employee);
 
-
+---------------------------------------------------------------------------------------------------------
+select TO_DATE(SUBSTR(EMP_NO,1,6), 'YYMMDD')
+from employee e 
 
 -- 3. 이름에 ‘하’가 들어가는 사원의 사번, 사원명, 직급명 조회
 SELECT emp_name, emp_no, dept_title, job_name
@@ -69,16 +83,17 @@ JOIN job USING (job_code)
 where dept_code in ('D5', 'D6')
 
 -- 5. 보너스를 받는 사원의 사원명, 보너스, 부서명, 지역명 조회
-SELECT emp_name, emp_no, dept_title, job_name, dept_code
+SELECT emp_name, BONUS, emp_no, dept_title, job_name, dept_code, local_name
 FROM employee
-JOIN department ON (dept_id = dept_code)
-JOIN job USING (job_code)
-where bonus is null
+left JOIN department ON (dept_id = dept_code)
+left JOIN job USING (job_code)
+left join location on (location_id = local_code)
+where bonus is not null
 
 -- 6. 모든 사원의 사원명, 직급명, 부서명, 지역명 조회
 SELECT emp_name, emp_no, dept_title, job_name, dept_code, local_name
 from employee
-join department on (dept_code = dept_id)
+left join department on (dept_code = dept_id)
 join location on (location_id = local_code)
 join national using (national_code)
 JOIN job USING (job_code)
@@ -90,6 +105,7 @@ join department on (dept_code = dept_id)
 join location on (location_id = local_code)
 join national using (national_code)
 JOIN job USING (job_code)
+where national_name in ('한국', '일본');
 
 -- 8. 하정연 사원과 같은 부서에서 일하는 사원의 사원명, 부서코드 조회
 SELECT emp_name, emp_no, dept_code
