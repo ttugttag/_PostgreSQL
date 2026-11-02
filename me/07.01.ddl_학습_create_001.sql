@@ -452,5 +452,42 @@ create table MEM2(
 	GENDER CHAR(1) CHECK(GENDER in ('남','여')),
 	PHONE VARCHAR(13),
 	EMAIL VARCHAR(30) ,
-	GRADE_ID numeric references MEM_GRADE on delete set CASCADE
+	GRADE_ID numeric references MEM_GRADE on delete CASCADE
 );
+
+insert into MEM2 VALUES(1, 'user01', 'pwd01', '홍길동','남',null,null,NULL);
+insert into MEM2 VALUES(2, 'user02', 'pwd02', '김길동','남',null,null,10);
+insert into MEM2 VALUES(3, 'user03', 'pwd03', '최길동','남',null,null,20);	
+insert into MEM2 VALUES(4, 'user04', 'pwd04', '박순희','여',null,null,10);
+
+
+delete from MEM_GRADE
+where GRADE_CODE = 10;
+
+create table member5(
+	MEM_NO numeric primary key,
+	MEM_NAME VARCHAR(20) not null,
+	MEM_age numeric,
+	hobby VARCHAR(20) default '없음', 
+	MEM_date date default current_date
+);
+
+insert into member5 VALUES(1, 'user01', 20, '운동', '2026-11-01');
+insert into member5 VALUES(2, 'user01', null, null, null);
+insert into member5 VALUES(3, 'user01', default, default);
+
+insert into member5 (MEM_NO, MEM_NAME) VALUES(4, '최길동');
+
+
+
+----------------------------------------------------------------------------
+create table employee_copy 
+as select *
+from employee;
+
+create table employee_copy2
+as select *
+from employee
+where 1=0;    --구조만 가져옴
+
+
