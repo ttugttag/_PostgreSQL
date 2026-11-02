@@ -262,6 +262,18 @@ with 술땡겨 as
 select *
 from 술땡겨
 
+----------------------------------------------------------------------------
+-- 1) UNION 사용하여 2행에
+with SUM_SAL as (select '급여합계' AS 구분, SUM(SALARY) AS 금액 from EMPLOYEE),
+		 AVG_SAL as (select '급여평균' as 구분, ROUND(AVG(SALARY)) as 금액 from EMPLOYEE)
+select * from SUM_SAL
+union
+select * from AVG_SAL;
+
+-- 2) 1행에 2열로
+with SUM_AVG as (select SUM(SALARY) as 급여합계, ROUND(AVG(SALARY)) as 급여평균 from EMPLOYEE)
+select * from SUM_AVG;
+
 
 --14 추가
 SELECT emp_name, dept_code, salary,
