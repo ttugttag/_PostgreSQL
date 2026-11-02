@@ -74,26 +74,67 @@ INSERT into TB_CATAGORY values ('의학', 'Y');
 INSERT into TB_CATAGORY values ('예체능', 'Y');
 INSERT into TB_CATAGORY values ('인문사회', 'Y');
 
+----------------------------------------------------------------------------------------------------------------
 
+CREATE TABLE ddl.tb_department AS 
+SELECT * FROM workbook.tb_department;
+
+CREATE TABLE ddl.tb_department AS
+SELECT * FROM workbook."TB_DEPARTMENT";
+----------------------------------------------------------------------------------------------------------------
 --9번 문제
 --TB_DEPARTMENT의 CATEGORY 컬럼이 TB_CATEGORY 테이블의 CATEGORY_NAME 컬럼을 
 --부모 값으로 참조하도록 FOREIGN KEY를 지정하시오. 
 --이때 KEY 이름은 FK_테이블이름_컬럼이름으로 지정한다. (ex. FK_DEPARTMENT_CATEGORY)
+
+ALTER TABLE tb_department
+ADD CONSTRAINT fk_department_catagory
+FOREIGN KEY (category)
+REFERENCES tb_catagory (pk_catagory_name);
 
 --10번 문제
 --춘 기술대학교 학생들의 정보만이 포함되어 있는 학생일반정보 VIEW를 만들고자 한다. 아래 내용을 참고하여 적절한 SQL 문을 작성하시오.
 --• 뷰 이름: VW_학생일반정보
 --• 컬럼: 학번, 학생이름, 주소
 
+CREATE OR REPLACE VIEW VW_학생일반정보 AS
+SELECT 
+    student_no AS 학번,
+    student_name AS 학생이름,
+    student_address AS 주소
+FROM 
+    tb_student;
+
 --11번 문제
 --춘 기술대학교는 1년에 두 번씩 학과별로 학생과 지도교수가 지도 면담을 진행한다. 이를 위해 사용할 학생이름, 학과이름, 담당교수이름으로 구성되어 있는 VIEW를 만드시오. 이때 지도 교수가 없는 학생이 있을 수 있음을 고려하시오 (단, 이 VIEW는 단순 SELECT만을 할 경우 학과별로 정렬되어 화면에 보여지게 만드시오.)
 --• 뷰 이름: VW_지도면담
 --• 컬럼: 학생이름, 학과이름, 지도교수이름
+
+CREATE OR REPLACE VIEW VW_지도면담 AS
+SELECT student_name AS 학생이름, department_name AS 학과이름, professor_name AS 지도교수이름
+FROM tb_student
+JOIN tb_department using (department_no)
+LEFT JOIN tb_professor ON (coach_professor_no = professor_no)
+ORDER BY department_name ASC;
+
 
 --12번 문제
 --모든 학과의 학과별 학생 수를 확인할 수 있도록 적절한 VIEW를 작성해 보자.
 --• 뷰 이름: VW_학과별학생수
 --• 컬럼: DEPARTMENT_NAME, STUDENT_COUNT
 
+CREATE OR REPLACE VIEW VW_학과별학생수 AS
+SELECT department_name AS DEPARTMENT_NAME,  COUNT(student_no) AS STUDENT_COUNT
+FROM tb_department 
+LEFT JOIN tb_student using (department_no)
+GROUP BY department_name;
+
+
 --13번 문제
 --위에서 생성한 학생일반정보 View를 통해서 학번이 A213046 인 학생의 이름을 본인 이름으로 변경하는 SQL 문을 작성하시오.
+
+UPDATE VW_학생일반정보
+SET 학생이름 = '김남규'
+WHERE 학번 = 'A213046';
+
+
