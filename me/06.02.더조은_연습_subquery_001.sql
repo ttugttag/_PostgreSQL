@@ -147,6 +147,10 @@ SELECT
 FROM employee
 GROUP by 퇴사자구분;
 
+select ENT_YN, COUNT(*)
+from employee
+group by ENT_YN
+
 ------------------------------------------------------------------
 SELECT 
     CASE WHEN ent_yn='N' THEN '재직자' 
@@ -178,7 +182,7 @@ SELECT emp_id, emp_name, dept_title, job_name, hire_date,
 FROM employee
 JOIN department ON (dept_code = dept_id)
 JOIN job USING (job_code)
-ORDER BY 순위 ASC
+--ORDER BY 순위 ASC
 LIMIT 5;
 
 --------WITH 사용------------------------------------------------------------------------------
