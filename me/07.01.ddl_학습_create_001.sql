@@ -53,6 +53,9 @@
  	 			FALSE	거짓
  	 			NULL	알 수 없음, 값이 없음	
 */
+
+CREATE database ddl;
+
 -- 회원 테이블 MEMBER 생성
 create table MEMBER(
 	MEM_NO numeric,
