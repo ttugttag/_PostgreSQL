@@ -76,11 +76,11 @@ INSERT into TB_CATAGORY values ('인문사회', 'Y');
 
 ----------------------------------------------------------------------------------------------------------------
 
-CREATE TABLE ddl.tb_department AS 
-SELECT * FROM workbook.tb_department;
-
-CREATE TABLE ddl.tb_department AS
-SELECT * FROM workbook."TB_DEPARTMENT";
+--CREATE TABLE ddl.tb_department AS 
+--SELECT * FROM workbook.tb_department;
+--
+--CREATE TABLE ddl.tb_department AS
+--SELECT * FROM workbook."TB_DEPARTMENT";
 ----------------------------------------------------------------------------------------------------------------
 --9번 문제
 --TB_DEPARTMENT의 CATEGORY 컬럼이 TB_CATEGORY 테이블의 CATEGORY_NAME 컬럼을 
