@@ -430,11 +430,12 @@ from EMPLOYEE;
 -- EMPLOYEE에서 급여가 350만원미만이면 '초급', 
 --						350만원 이상 500만원 미만 이면 '중급', 
 --						500만원 이상이면 '고급'
-select EMP_NAME, SALARY
-			,case when SALARY >= 5000000 then '고급'
-						when SALARY >= 3500000 then '중급'
-						else '초급'
-			 end as 급수
+select EMP_NAME
+	, SALARY
+	,case when SALARY >= 5000000 then '고급'
+		  when SALARY >= 3500000 then '중급'
+		  else '초급'
+	 end as 급수
 from EMPLOYEE;
 
 --=========================================================================
