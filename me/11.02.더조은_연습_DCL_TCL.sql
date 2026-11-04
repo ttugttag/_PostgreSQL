@@ -38,9 +38,10 @@ where rolname='practice_dcl_user';
 --SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
 --FROM EMPLOYEE;
 
-create TABLE practice_emp AS
+create temp TABLE practice_emp AS
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
 FROM EMPLOYEE;
+--COMMIT;
 
 
 -- ===========================================================================
@@ -66,7 +67,7 @@ ROLLBACK;
 
 SELECT * FROM practice_emp; 
 
-
+commit;
 
 /*
 문제 7. 다음 작업을 순서대로 수행하기.
@@ -82,7 +83,8 @@ UPDATE practice_emp
 SET salary = salary + 500000
 where emp_id = '201';
 
-SELECT * FROM practice_emp;
+SELECT * FROM practice_emp
+where emp_id = '201';
 
 commit;
 --ROLLBACK;
@@ -90,50 +92,169 @@ commit;
 SELECT * FROM practice_emp;
 
 
-/*
-문제 8. 다음 작업을 순서대로 수행
-1) 트랜잭션을 시작
-2) 사번이 202인 사원의 급여를 300000 증가시키기
-3) SAVEPOINT SP1을 생성
-4) 사번이 203인 사원의 급여를 400000 증가
-5) ROLLBACK TO SP1을 실행
-6) 사번 202와 203의 급여를 각각 조회
-7) COMMIT하기
 
-※ SP1 이전의 변경은 유지되고, SP1 이후의 변경은 취소되어야 함
-*/
+--문제 8. 다음 작업을 순서대로 수행
+--1) 트랜잭션을 시작
+BEGIN;
+--2) 사번이 202인 사원의 급여를 300000 증가시키기
+UPDATE practice_emp
+SET salary = salary + 300000
+where emp_id = '202';
+
+SELECT * FROM practice_emp
+where emp_id = '202';
+
+--3) SAVEPOINT SP1을 생성
+SAVEPOINT SP1;
+--4) 사번이 203인 사원의 급여를 400000 증가
+UPDATE practice_emp
+SET salary = salary + 400000
+where emp_id = '203';
+
+SELECT * FROM practice_emp
+where emp_id = '203';
+
+--5) ROLLBACK TO SP1을 실행
+ROLLBACK TO SP1;
+
+SELECT * FROM practice_emp
+where emp_id = '203';
+
+--6) 사번 202와 203의 급여를 각각 조회
+SELECT * FROM practice_emp
+where emp_id in ('202', '203');
+
+--7) COMMIT하기
+commit;
+
+SELECT * FROM practice_emp
+where emp_id in ('202', '203');
+
+--※ SP1 이전의 변경은 유지되고, SP1 이후의 변경은 취소되어야 함
 
 
 
-/*
-문제 9. 다음 작업을 순서대로 수행
-1) 트랜잭션을 시작하기
-2) 사번 204의 급여를 100000 증가시키기
-3) SAVEPOINT SP_A를 생성하기
-4) 사번 205의 급여를 200000 증가시키기
-5) SAVEPOINT SP_B를 생성하기.
-6) 사번 206의 급여를 300000 증가시키기
-7) ROLLBACK TO SP_A를 실행하기
-8) 사번 204, 205, 206의 급여를 조회하기
-9) COMMIT하기.
-
-※ SP_A 이전 변경만 남고, SP_A 이후 변경은 모두 취소되어야 함
-*/
 
 
+--문제 9. 다음 작업을 순서대로 수행
+--1) 트랜잭션을 시작하기
+BEGIN;
+--2) 사번 204의 급여를 100000 증가시키기
+UPDATE practice_emp
+SET salary = salary + 100000
+where emp_id = '204';
 
-/*
-문제 10. 다음 작업을 순서대로 수행
-1) 트랜잭션을 시작하기
-2) 임시 테이블에 다음 데이터를 INSERT하기
-   - 사번: 900
-   - 이름: 연습사원
-   - 부서코드: D1
-   - 급여: 2500000
-3) 사번이 200인 사원을 DELETE하기
-4) SELECT로 사번 900과 200의 존재 여부를 확인하기.
-5) ROLLBACK으로 모든 변경사항을 취소하기
-6) 다시 조회하여 사번 900은 없고, 사번 200은 복구되었는지 확인하기
-*/
+SELECT * FROM practice_emp
+where emp_id = '204';
+
+--3) SAVEPOINT SP_A를 생성하기
+SAVEPOINT SP_A;
+
+--4) 사번 205의 급여를 200000 증가시키기
+UPDATE practice_emp
+SET salary = salary + 200000
+where emp_id = '205';
+
+SELECT * FROM practice_emp
+where emp_id = '205';
+
+--5) SAVEPOINT SP_B를 생성하기.
+SAVEPOINT SP_B;
+
+--6) 사번 206의 급여를 300000 증가시키기
+UPDATE practice_emp
+SET salary = salary + 300000
+where emp_id = '206';
+
+SELECT * FROM practice_emp
+where emp_id = '206';
+
+--7) ROLLBACK TO SP_A를 실행하기
+ROLLBACK TO SP_A;
+
+--8) 사번 204, 205, 206의 급여를 조회하기
+SELECT * FROM practice_emp
+where emp_id IN ('204', '205', '206')
+order BY EMP_ID;
+
+--9) COMMIT하기.
+commit;
+
+--※ SP_A 이전 변경만 남고, SP_A 이후 변경은 모두 취소되어야 함
+SELECT * FROM practice_emp
+where emp_id IN ('204', '205', '206')
+order BY EMP_ID;
+
+
+
+
+--문제 10. 다음 작업을 순서대로 수행
+--1) 트랜잭션을 시작하기
+SELECT * FROM practice_emp
+ORDER by EMP_ID;
+
+BEGIN;
+--2) 임시 테이블에 다음 데이터를 INSERT하기
+--   - 사번: 900
+--   - 이름: 연습사원
+--   - 부서코드: D1
+--   - 급여: 2500000
+insert into practice_emp VALUES(900,'연습사원','D1',2500000);
+
+SELECT * FROM practice_emp
+ORDER by EMP_ID;
+
+--3) 사번이 200인 사원을 DELETE하기
+DELETE FROM practice_emp
+WHERE EMP_ID = '200';
+
+--4) SELECT로 사번 900과 200의 존재 여부를 확인하기.
+SELECT * FROM practice_emp
+where EMP_ID in ('900', '200')
+ORDER by EMP_ID;
+
+--5) ROLLBACK으로 모든 변경사항을 취소하기
+ROLLBACK;
+
+--6) 다시 조회하여 사번 900은 없고, 사번 200은 복구되었는지 확인하기
+SELECT * FROM practice_emp
+where EMP_ID in ('900', '200')
+ORDER by EMP_ID;
 
 -- 문제 11. 문제1~5까지 주었던 모든 권한 삭제
+SELECT *
+--    grantee AS user_name,
+--    table_schema AS schema_name,
+--    table_name,
+--    privilege_type AS permission_type
+FROM 
+    information_schema.role_table_grants 
+WHERE 
+    grantee = 'practice_dcl_user'
+    and 
+    table_name = 'employee'
+ORDER BY 
+    table_schema, table_name;
+
+--REVOKE SELECT, UPDATE, DELETE ON TABLE employee FROM practice_dcl_user;
+--REVOKE USAGE ON SCHEMA public FROM practice_dcl_user;
+--REVOKE CONNECT ON DATABASE TJOEUN FROM practice_dcl_user;
+
+DROP OWNED BY practice_dcl_user;
+drop user practice_dcl_user;
+
+SELECT 
+    usename AS username,
+    usesuper AS is_superuser,
+    usecreatedb AS can_create_db,
+    valuntil AS password_expiry
+FROM 
+    pg_catalog.pg_user;
+
+SELECT rolname, rolcanlogin, rolsuper FROM pg_roles;
+
+
+
+
+
+
