@@ -101,3 +101,16 @@ revoke all on table EMPLOYEE from SAMPLE;
 
 -- 모든 테이블 권한 회수
 revoke all on all tables in schema PUBLIC from SAMPLE;
+
+-- 데이터베이스 접속 권한 회수
+revoke connect on database tjoeun from sample;
+-- 스키마 권한 회수
+revoke usage on schema public from sample;
+-- 사용자 삭제
+drop user sample;
+
+revoke all on database postgres from sample;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public 
+REVOKE ALL ON TABLES FROM sample;
+
