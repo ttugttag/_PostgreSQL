@@ -31,6 +31,20 @@ revoke INSERT on table EMPLOYEE from practice_dcl_user;
 select * 
 from pg_roles
 where rolname='practice_dcl_user';
+------추가 --------------------------------
+SELECT *
+--    grantee AS user_name,
+--    table_schema AS schema_name,
+--    table_name,
+--    privilege_type AS permission_type
+FROM 
+    information_schema.role_table_grants 
+WHERE 
+    grantee = 'practice_dcl_user'
+    and 
+    table_name = 'employee'
+ORDER BY 
+    table_schema, table_name;
 
 -- ===========================================================================
 -- 현재 접속 세션에서만 사용 접속을 종료하면 자동 삭제되는 테이블을 생성 후 문제풀기
@@ -235,7 +249,7 @@ WHERE
     table_name = 'employee'
 ORDER BY 
     table_schema, table_name;
-
+--REVOKE ALL PRIVILEGES ON TABLE employee FROM practice_dcl_user;
 --REVOKE SELECT, UPDATE, DELETE ON TABLE employee FROM practice_dcl_user;
 --REVOKE USAGE ON SCHEMA public FROM practice_dcl_user;
 --REVOKE CONNECT ON DATABASE TJOEUN FROM practice_dcl_user;
