@@ -31,6 +31,20 @@ revoke INSERT on table EMPLOYEE from practice_dcl_user;
 select * 
 from pg_roles
 where rolname='practice_dcl_user';
+------추가 --------------------------------
+SELECT *
+--    grantee AS user_name,
+--    table_schema AS schema_name,
+--    table_name,
+--    privilege_type AS permission_type
+FROM 
+    information_schema.role_table_grants 
+WHERE 
+    grantee = 'practice_dcl_user'
+    and 
+    table_name = 'employee'
+ORDER BY 
+    table_schema, table_name;
 
 -- ===========================================================================
 -- 현재 접속 세션에서만 사용 접속을 종료하면 자동 삭제되는 테이블을 생성 후 문제풀기
@@ -235,7 +249,7 @@ WHERE
     table_name = 'employee'
 ORDER BY 
     table_schema, table_name;
-
+--REVOKE ALL PRIVILEGES ON TABLE employee FROM practice_dcl_user;
 --REVOKE SELECT, UPDATE, DELETE ON TABLE employee FROM practice_dcl_user;
 --REVOKE USAGE ON SCHEMA public FROM practice_dcl_user;
 --REVOKE CONNECT ON DATABASE TJOEUN FROM practice_dcl_user;
@@ -253,6 +267,53 @@ FROM
 
 SELECT rolname, rolcanlogin, rolsuper FROM pg_roles;
 
+
+
+-----추가 1 -------------------------------------------------
+-- 1. 데이터베이스 연결 및 생성 권한 부여
+GRANT ALL PRIVILEGES ON DATABASE 데이터베이스명 TO your_user;
+
+-- 2. 스키마에 대한 모든 권한 부여
+GRANT ALL PRIVILEGES ON SCHEMA public TO your_user;
+
+-- 3. 스키마 내 기존 모든 테이블에 대한 권한 부여
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO your_user;
+
+-- 4. 스키마 내 기존 모든 시퀀스(ID 자동증가 등) 권한 부여
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO your_user;
+
+-- 5. (선택) 향후 생성될 새 테이블에도 자동으로 권한을 부여하고 싶을 때
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO your_user;
+
+-----추가 2 -------------------------------------------------
+-- 1. 데이터베이스 연결 권한 부여 (필수)
+GRANT CONNECT ON DATABASE 데이터베이스명 TO your_user;
+
+-- 2. 스키마 사용 권한 부여 (필수, 테이블이 속한 스키마 접근용)
+GRANT USAGE ON SCHEMA public TO your_user;
+
+-- 3. 특정 테이블에 원하는 권한만 부여 (예: 특정 테이블 조회/수정만 허용)
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE 테이블명1, 테이블명2 TO your_user;
+
+-- (참고) 만약 특정 테이블의 모든 권한(모든 행위)을 다 주려면:
+GRANT ALL PRIVILEGES ON TABLE 테이블명1 TO your_user;
+
+-----추가 3 -------------------------------------------------
+--postgresql.conf 수정
+--# 수정 전 (주석 처리되어 있거나 localhost로 제한됨)
+--#listen_addresses = 'localhost'
+--
+--# 수정 후 (모든 IP의 접속 요청을 수신)
+--listen_addresses = '*'
+
+--pg_hba.conf 수정
+--# TYPE  DATABASE        USER            ADDRESS                 METHOD
+--
+--# 방법 A) 어디서나 접속 가능하도록 전면 개방 (테스트용)
+--host    all             all             0.0.0.0/0               scram-sha-256
+--
+--# 방법 B) 특정 외부 IP(예: 211.222.111.5)만 안전하게 허용 (보안 권장)
+--host    all             all             211.222.111.5/32        scram-sha-256
 
 
 
