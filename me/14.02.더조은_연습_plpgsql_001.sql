@@ -105,31 +105,67 @@ $$
 -- 사원명, 직급코드, 입사일, 퇴직여부를 RAISE NOTICE로 출력
 do $$
 declare
-	EID EMPLOYEE.EMP_ID%type;
 	ENAME EMPLOYEE.EMP_NAME%type;
-	JCODE EMPLOYEE.JOB_CODE%type;
-	SAL EMPLOYEE.SALARY%type;
-	DTITLE DEPARTMENT.DEPT_TITLE%type;
+	jcode EMPLOYEE.job_code%type;
+	hiredate EMPLOYEE.hire_date%type;
+	etnyn EMPLOYEE.ent_yn%type;
 begin
-	select EMP_NAME, JOB_CODE, hire_date,SALARY, DEPT_TITLE
-	into EID, ENAME, JCODE,SAL,DTITLE
+	select EMP_NAME, job_code, hire_date, ent_yn
+	into ENAME, jcode, hiredate,etnyn
 	from EMPLOYEE
-	join DEPARTMENT on (DEPT_CODE=DEPT_ID)
-	where EMP_ID = ${사번};
-	raise notice '사번 : %',EID;
+	where EMP_ID=${사번};
 	raise notice '사원명 : %',ENAME;
-	raise notice '직급코드 : %', JCODE;
-	raise notice '급여 : %', SAL;
-	raise notice '부서명 : %', DTITLE;
+	raise notice '직급코드 : %',jcode;
+	raise notice '입사일 : %', hiredate;
+	raise notice '퇴직여부 : %', etnyn;
 end;
 $$;
-
+-----------------------------------------------------------------------------------------------------------
+do $$
+declare
+    target_emp_id EMPLOYEE.EMP_ID%type := '200'; 
+    
+    -- [핵심] EMPLOYEE 테이블의 모든 컬럼 구조를 가진 변수 'emp' 선언
+    emp EMPLOYEE%ROWTYPE; 
+begin
+    -- select 뒤에 컬럼을 일일이 나열하지 않고 * 로 한 번에 가져와 emp에 넣습니다.
+    select *
+    into emp
+    from EMPLOYEE
+    where EMP_ID = target_emp_id; 
+    
+    -- 사용할 때는 '변수명.컬럼명' 형태로 마침표(.)를 찍어서 접근합니다.
+    raise notice '사원명 : %', emp.EMP_NAME;
+    raise notice '직급코드 : %', emp.job_code;
+    raise notice '입사일 : %', emp.hire_date;
+    raise notice '퇴직여부 : %', emp.ent_yn;
+end;
+$$;
 
 -- 문제 8. DO 블록에서 사번이 '205'인 사원의 급여와 급여등급을 조회
 -- SAL_GRADE의 MIN_SAL, MAX_SAL 범위를 이용하여 급여등급(SAL_LEVEL)을 찾고
 -- 급여와 급여등급을 RAISE NOTICE로 출력
+do $$
+declare
+	VEMP_ID EMPLOYEE.EMP_ID%type;
+	VSALARY EMPLOYEE.SALARY%type;
+	VSAL_LEVEL SAL_GRADE.SAL_LEVEL%type;
+begin
+	select EMP_ID, SALARY, SAL_LEVEL
+	into VEMP_ID, VSALARY, VSAL_LEVEL
+	from EMPLOYEE
+	join SAL_GRADE on (SALARY BETWEEN MIN_SAL and  MAX_SAL)
+	where EMP_ID=${사번};
+	raise notice '사원명 : %', VEMP_ID;
+	raise notice '급여 : %', VSALARY;
+	raise notice '등급 : %', VSAL_LEVEL;
+end;
+$$;
 
 
+select EMP_ID, SALARY, SAL_LEVEL
+from EMPLOYEE
+join SAL_GRADE on (SALARY BETWEEN MIN_SAL and  MAX_SAL);
 
 -- 문제 9. DO 블록에서 사번이 '207'인 사원의 직급코드와 직급명을 조회
 -- CASE문을 사용하여 직급코드가 J1 또는 J2이면 '임원급',
@@ -137,9 +173,65 @@ $$;
 -- 그 외에는 '일반직원'으로 구분
 -- 사원명, 직급명, 직급분류를 RAISE NOTICE로 출력
 
+select EMP_NAME, job_name, job_code,
+CASE 
+   WHEN job_code in ('J1','J2') THEN '임원급'
+   WHEN job_code in ('J3','J4') THEN '관리자급'
+   WHEN job_code = 'J5' THEN '중간관리자급'
+   ELSE '일반직원'
+end as "직급분류"
+from EMPLOYEE
+join JOB USING (job_code);
 
+
+do $$
+declare
+	V_EMP_NAME EMPLOYEE.EMP_NAME%type;
+	V_job_name job.job_name%type;
+	V_job_code EMPLOYEE.job_code%type;
+	V_직급분류 VARCHAR(20);
+begin
+	select EMP_NAME, job_name, job_code,
+		CASE 
+		   WHEN job_code in ('J1','J2') THEN '임원급'
+		   WHEN job_code in ('J3','J4') THEN '관리자급'
+		   WHEN job_code = 'J5' THEN '중간관리자급'
+		   ELSE '일반직원'
+		end
+	into V_EMP_NAME, V_job_name, V_job_code, V_직급분류
+	from EMPLOYEE
+	join JOB USING (job_code)
+	where EMP_ID=${사번};
+	raise notice '사원명 : %', V_EMP_NAME;
+	raise notice '직급명 : %', V_job_name;
+	raise notice '직급코드 : %', V_job_code;
+	raise notice '직급분류 : %', V_직급분류;
+end;
+$$;
 
 -- 문제 10. DO 블록에서 FOR LOOP를 사용하여 1부터 5까지 반복
 -- 각 숫자에 3을 곱한 결과를 RAISE NOTICE로 출력
 -- 단, 결과가 9인 경우에는 '9는 건너뜁니다'를 출력하고
 -- 곱셈 결과는 출력하지 않도록 IF 조건문을 사용
+
+DO $$
+DECLARE
+    V_NUM NUMERIC;    -- 곱셈 결과를 담을 변수
+BEGIN
+    -- 1. FOR LOOP를 사용하여 1부터 5까지 반복
+    FOR I IN 1..5 LOOP
+        -- 각 숫자에 3을 곱함
+        V_NUM := I * 3;
+
+        -- 2. IF 조건문을 사용하여 결과가 9인 경우 처리
+        IF V_NUM = 9 THEN
+            RAISE NOTICE '9는 건너뜁니다';
+            CONTINUE; -- 아래 출력을 실행하지 않고 다음 반복(I=4)으로 넘어감
+        END IF;
+
+        -- 3. 곱셈 결과 출력
+        RAISE NOTICE '% * 3 = %', I, V_NUM;
+    END LOOP;
+END $$;
+
+

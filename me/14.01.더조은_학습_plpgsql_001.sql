@@ -1,5 +1,5 @@
 --- 윈도우 => 환경설정 => 편집기 => SQL편집기 => 
---- SQL실행 =>  ANONYOUNS CHECK,ENABLE PARMATER IN DDL
+--- SQL실행 =>  ANONYOUNS CHECK,ENABLE PARAMETER IN DDL
 
 
 /*
