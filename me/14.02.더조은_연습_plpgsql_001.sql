@@ -238,23 +238,17 @@ declare
 	V_job_code EMPLOYEE.job_code%type;
 	V_직급분류 VARCHAR(20);
 begin
-	select EMP_NAME, job_name, job_code,
-		CASE 
-		   WHEN job_code in ('J1','J2') THEN '임원급'
-		   WHEN job_code in ('J3','J4') THEN '관리자급'
-		   WHEN job_code = 'J5' THEN '중간관리자급'
-		   ELSE '일반직원'
-		end
-	into V_EMP_NAME, V_job_name, V_job_code
+	select EMP_NAME, job_name, job_code
+	into V_EMP_NAME, V_job_name, V_job_code, V_직급분류
 	from EMPLOYEE
 	join JOB USING (job_code)
 	where EMP_ID=${사번};
 	
 	V_직급분류 := 	
 	CASE 
-	   WHEN job_code in ('J1','J2') THEN '임원급'
-	   WHEN job_code in ('J3','J4') THEN '관리자급'
-	   WHEN job_code = 'J5' THEN '중간관리자급'
+	   WHEN V_job_code in ('J1','J2') THEN '임원급'
+	   WHEN V_job_code in ('J3','J4') THEN '관리자급'
+	   WHEN V_job_code = 'J5' THEN '중간관리자급'
 	   ELSE '일반직원'
 	end;
 	
