@@ -230,6 +230,42 @@ begin
 end;
 $$;
 
+-------------------------------------------------------------------------
+do $$
+declare
+	V_EMP_NAME EMPLOYEE.EMP_NAME%type;
+	V_job_name job.job_name%type;
+	V_job_code EMPLOYEE.job_code%type;
+	V_직급분류 VARCHAR(20);
+begin
+	select EMP_NAME, job_name, job_code,
+		CASE 
+		   WHEN job_code in ('J1','J2') THEN '임원급'
+		   WHEN job_code in ('J3','J4') THEN '관리자급'
+		   WHEN job_code = 'J5' THEN '중간관리자급'
+		   ELSE '일반직원'
+		end
+	into V_EMP_NAME, V_job_name, V_job_code
+	from EMPLOYEE
+	join JOB USING (job_code)
+	where EMP_ID=${사번};
+	
+	V_직급분류 := 	
+	CASE 
+	   WHEN job_code in ('J1','J2') THEN '임원급'
+	   WHEN job_code in ('J3','J4') THEN '관리자급'
+	   WHEN job_code = 'J5' THEN '중간관리자급'
+	   ELSE '일반직원'
+	end;
+	
+	raise notice '사원명 : %', V_EMP_NAME;
+	raise notice '직급명 : %', V_job_name;
+	raise notice '직급코드 : %', V_job_code;
+	raise notice '직급분류 : %', V_직급분류;
+end;
+$$;
+
+
 -- 문제 10. DO 블록에서 FOR LOOP를 사용하여 1부터 5까지 반복
 -- 각 숫자에 3을 곱한 결과를 RAISE NOTICE로 출력
 -- 단, 결과가 9인 경우에는 '9는 건너뜁니다'를 출력하고
