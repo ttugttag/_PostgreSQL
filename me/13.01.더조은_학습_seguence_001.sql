@@ -8,7 +8,7 @@
  1. SEQUENCE 생성
  	[표현식]
  	CREATE SEQUENCE 시퀀스명
- 	[START WITN 시작숫자]			-> 처음 발생시킬 시작값 지정(기본값 1)
+ 	[START WITH 시작숫자]			-> 처음 발생시킬 시작값 지정(기본값 1)
  	[INCREAMENT BY 증가값]		-> 몇씩 증가시킬것인지(기본값 1)
  	[MAXVALUE 숫자]				-> 최대값 지정(기본값 무지큼)
  	[MINVALUE 숫자]				-> 최소값 지정(기본값 1)
@@ -47,15 +47,14 @@ select NEXTVAL('SEQ_EMPNO');		-- MAXVAL값 초과하여 오류
 select CURRVAL('SEQ_EMPNO');		-- 310
 
 /*
- 3. 시퀀스 구조 변경
- 
- ALTER SEQUENCE 시퀀스명
-[INCREAMENT BY 증가값]		-> 몇씩 증가시킬것인지(기본값 1)
-[MAXVALUE 숫자]				-> 최대값 지정(기본값 무지큼)
-[MINVALUE 숫자]				-> 최소값 지정(기본값 1)
-[CYCLE | NO CYCLE]			-> 값 순환 여부 지정(기본값 NO CYCLE)
-[CACHE 미리 만들어둘번호의개수]	-> 미리 확보할 시퀀스 번호 개수
-[RESTART WITH 시작할숫자]		-> 시작번호 재설정
+3. 시퀀스 구조 변경
+	ALTER SEQUENCE 시퀀스명
+		[INCREAMENT BY 증가값]		-> 몇씩 증가시킬것인지(기본값 1)
+		[MAXVALUE 숫자]				-> 최대값 지정(기본값 무지큼)
+		[MINVALUE 숫자]				-> 최소값 지정(기본값 1)
+		[CYCLE | NO CYCLE]			-> 값 순환 여부 지정(기본값 NO CYCLE)
+		[CACHE 미리 만들어둘번호의개수]	-> 미리 확보할 시퀀스 번호 개수
+		[RESTART WITH 시작할숫자]		-> 시작번호 재설정
 */
 alter sequence SEQ_EMPNO
 increment by 10
@@ -79,6 +78,9 @@ select * from EMPLOYEE;
 insert into EMPLOYEE(EMP_ID, EMP_NAME, EMP_NO, JOB_CODE)
 values (NEXTVAL('SEQ_EID'), '이만수','222222-2222222','J2');
 
+delete from EMPLOYEE
+where EMP_ID in ('400', '401');
+
 --=========================================================
 /*
  <SERIAL>
@@ -93,6 +95,12 @@ create table MEMBER(
 	PHONE VARCHAR(20)
 );
 
+--create table MEMBER(
+--	MEM_NO NUMERIC primary key, 
+--	MEM_NAME VARCHAR(20) not null,
+--	PHONE VARCHAR(20)
+--);
+
 insert into member(MEM_NAME, PHONE)
 values ('김철수','01012341234');
 
@@ -106,6 +114,8 @@ values ('박민수','01012121212');
 
 -- 시퀀스 이름 확인
 select PG_GET_SERIAL_SEQUENCE('member','mem_no');
+
+--select PG_GET_SERIAL_SEQUENCE('EMPLOYEE','EMP_ID');  -- <== 불가 
 
 -- serial의 시작값과 증가간격 변경
 alter sequence member_mem_no_seq
