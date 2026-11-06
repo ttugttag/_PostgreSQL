@@ -166,6 +166,27 @@ $$;
 select EMP_ID, SALARY, SAL_LEVEL
 from EMPLOYEE
 join SAL_GRADE on (SALARY BETWEEN MIN_SAL and  MAX_SAL);
+---다른 방법--------------------------------------------------------------------------
+do $$
+declare
+	VSALARY EMPLOYEE.SALARY%type;
+	VSAL_LEVEL SAL_GRADE.SAL_LEVEL%type;
+begin
+	select SALARY
+	into VSALARY
+	from EMPLOYEE
+    where EMP_ID=${사번};
+    
+	SELECT SAL_LEVEL 
+    INTO VSAL_LEVEL 
+    FROM SAL_GRADE 
+    WHERE VSALARY BETWEEN MIN_SAL AND MAX_SAL;
+		
+	raise notice '급여 : %', VSALARY;
+	raise notice '등급 : %', VSAL_LEVEL;
+end;
+$$;
+
 
 -- 문제 9. DO 블록에서 사번이 '207'인 사원의 직급코드와 직급명을 조회
 -- CASE문을 사용하여 직급코드가 J1 또는 J2이면 '임원급',

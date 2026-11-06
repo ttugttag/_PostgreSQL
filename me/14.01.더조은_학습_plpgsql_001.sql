@@ -274,7 +274,7 @@ $$
 	
 	실행 : 사용자가 입력한 사번의 사번, 이름, 부서명, 근무국가코드를 변수에 대입
 				단) NCODE값이 KO일 경우 => TEAM에 '국내팀'
-						NCODE값이 KO가 아닐 경우 => TEAM에 '해외팀'
+				    NCODE값이 KO가 아닐 경우 => TEAM에 '해외팀'
 						
   출력 : 사번, 이름, 부서명, 소속 출력			
 */
@@ -646,6 +646,25 @@ BEGIN
     		RAISE NOTICE ''; 
         END IF;
         dan := dan + 1; 
+    END LOOP;	
+END; 
+$$;
+
+--2) WHILE LOOP----------------------------------------------------
+DO $$
+DECLARE
+    dan int := 2;
+    i int;
+BEGIN
+	while dan <= 9 then loop
+		i :=1;
+		RAISE NOTICE '--- % 단 ---', dan;
+		while i <= 9 loop
+	        RAISE NOTICE '% x % = %', dan, i, (dan * i); 
+	        i := i + 1; 
+		END LOOP;
+		RAISE NOTICE ''; 
+        dan := dan + 2; 
     END LOOP;	
 END; 
 $$;
