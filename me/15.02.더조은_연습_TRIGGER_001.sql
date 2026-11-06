@@ -102,3 +102,11 @@ select * from practice_salary_log;
 -- 준비
 DROP TABLE IF EXISTS PRACTICE_SALARY_LOG;
 DROP TABLE IF EXISTS PRACTICE_EMPLOYEE;
+
+
+
+
+
+
+
+
