@@ -98,8 +98,7 @@ $$ language PLPGSQL;
 
 -- 트리거 생성
 create trigger TRG_MEM_DELETE
-before delete
-on MEM
+before delete on MEM
 for each row 
 execute function FN_MEM_DELETE();
 
@@ -165,11 +164,13 @@ returns trigger
 as $$
 begin
 	update tb_product
-	set STOCK_QUANT= STOCK_QUANT+new.STOCK_COUNT
+	set STOCK_QUANT= STOCK_QUANT + new.STOCK_COUNT
 	where PCODE = new.PCODE;
 	return new;
 end;
 $$ language PLPGSQL;
+
+drop FUNCTION FN_TRG_STOCK() CASCADE;
 
 -- 트리거생성
 create trigger TRG_STOCK
@@ -206,10 +207,10 @@ for each row
 execute function FN_TRG_STOCKSALE();
 
 insert into tb_prosale
-VALUES(NEXTVAL('SEQ_TCODE'), 205, CURRENT_DATE, 5,1500000);
+VALUES(NEXTVAL('SEQ_TCODE'), 205, CURRENT_DATE, 5, 1500000);
 
 insert into tb_prosale
-VALUES(NEXTVAL('SEQ_TCODE'), 210, CURRENT_DATE, 100,2500000);
+VALUES(NEXTVAL('SEQ_TCODE'), 210, CURRENT_DATE, 100, 2500000);
 
 
 		  

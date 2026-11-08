@@ -31,13 +31,13 @@ create table PRACTICE_SALARY_LOG(
 SELECT * FROM PRACTICE_SALARY_LOG;
 
 --   3. PRACTICE_EMPLOYEE 테이블에서 UPDATE가 발생한 후 실행되는 행 단위 트리거 작성
---create function FN_TRG_01()
---returns trigger as $$
---begin 
---	raise notice '%의 급여가 %에서 %로 변경', NEW.emp_name, old.salary, new.salary;
---	return new;
---end;
---$$ language PLPGSQL;
+create function FN_TRG_01()
+returns trigger as $$
+begin 
+	raise notice '%의 급여가 %에서 %로 변경', NEW.emp_name, old.salary, new.salary;
+	return new;
+end;
+$$ language PLPGSQL;
 
 drop function FN_TRG_01() cascade;
 
@@ -98,7 +98,7 @@ TRUNCATE TABLE practice_salary_log;
 --      급여 변경 및 이력 저장 결과 확인.
 select * from PRACTICE_EMPLOYEE;
 select * from practice_salary_log;
-
+	
 -- 준비
 DROP TABLE IF EXISTS PRACTICE_SALARY_LOG;
 DROP TABLE IF EXISTS PRACTICE_EMPLOYEE;
