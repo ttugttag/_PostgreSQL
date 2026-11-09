@@ -36,10 +36,22 @@ create table PRACTICE_SALARY_LOG(
 SELECT * FROM PRACTICE_SALARY_LOG;
 
 --   3. PRACTICE_EMPLOYEE 테이블에서 UPDATE가 발생한 후 실행되는 행 단위 트리거 작성
-create function FN_TRG_01()
+--create function FN_TRG_01()
+--returns trigger as $$
+--begin 
+--	raise notice '%의 급여가 %에서 %로 변경', NEW.emp_name, old.salary, new.salary;
+--	return new;
+--end;
+--$$ language PLPGSQL;
+
+create or replace function FN_TRG_01()
 returns trigger as $$
 begin 
-	raise notice '%의 급여가 %에서 %로 변경', NEW.emp_name, old.salary, new.salary;
+	IF old.salary IS DISTINCT FROM new.salary THEN
+		INSERT INTO PRACTICE_SALARY_LOG
+		VALUES(old.EMP_ID, old.EMP_NAME, old.SALARY, NEW.SALARY, current_date)
+	END IF;
+--	raise notice '%의 급여가 %에서 %로 변경', NEW.emp_name, old.salary, new.salary;
 	return new;
 end;
 $$ language PLPGSQL;
