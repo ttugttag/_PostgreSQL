@@ -5,6 +5,11 @@
 --
 --   1. EMPLOYEE 테이블에서 사번, 사원명, 급여 컬럼만 복사하여 PRACTICE_EMPLOYEE 테이블 생성
 
+DROP TABALE IF EXISTS PRACTICE_EMPLOYEE;
+DROP TABALE IF EXISTS PRACTICE_SALARY_LOG;
+-------------------------------------------------------------
+DROP TABLE IF EXISTS PRACTICE_EMPLOYEE, PRACTICE_SALARY_LOG;
+
 create table PRACTICE_EMPLOYEE
 as select emp_id, emp_name,salary
 from EMPLOYEE;

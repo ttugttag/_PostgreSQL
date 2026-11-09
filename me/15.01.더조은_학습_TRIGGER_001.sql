@@ -187,7 +187,8 @@ VALUES(NEXTVAL('SEQ_TCODE'), 210, CURRENT_DATE, 100,2500000);
 
 -- 판매 테이블(tb_prosale)에 판매 되었을 때 트리거 정의
 -- 함수정의
-create function FN_TRG_STOCKSALE()
+--create function FN_TRG_STOCKSALE()
+create or replace function FN_TRG_STOCKSALE()
 returns trigger 
 as $$
 begin
@@ -212,9 +213,39 @@ VALUES(NEXTVAL('SEQ_TCODE'), 205, CURRENT_DATE, 5, 1500000);
 insert into tb_prosale
 VALUES(NEXTVAL('SEQ_TCODE'), 210, CURRENT_DATE, 100, 2500000);
 
+-----출고 수량이 재고 수량보다 많을때
+create or replace function FN_TRG_SALE_BRFORE()
+returns trigger 
+as $$
+DECLARE SCOUNT NUMERIC;    ---기존의 재고수량 넣는 변수
+begin
+	SELECT STOCK_QUANT
+	INTO STRICT SCOUNT
+	FROM TB_PRODUCT
+	where PCODE = new.PCODE;
 
-		  
-		  
+	IF (SCOUNT >= new.SALE_COUNT) THEN
+		update tb_product
+		set stock_quant= stock_quant - new.SALE_COUNT
+		where PCODE = new.PCODE;
+		
+		return new;
+	ELSE
+		RAISE EXCEPTION '재고수량이 부족합니다.';
+	END IF;
+end;
+$$ language PLPGSQL;
+
+		-- 트리거생성
+CREATE TRIGGER TRG_SALE_EX
+BEFORE INSERT ON tb_prosale
+FOR EACH ROW
+EXECUTE PROCEDURE FN_TRG_SALE_BRFORE(); 
+	
+DROP TRIGGER IF EXISTS TRG_SALE_EX ON tb_prosale;
+
+insert into tb_prosale
+VALUES(NEXTVAL('SEQ_TCODE'), 210, CURRENT_DATE, 100, 2500000);
 		  
 
 
